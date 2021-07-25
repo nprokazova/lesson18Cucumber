@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 //        ,
 //        tags = {"@smoke"}
 
-        )
+)
 public class RunCucumberTest {
 
 }
