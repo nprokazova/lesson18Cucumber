@@ -13,11 +13,11 @@ Feature: Save data in DB
     When Getting information about user "<id>" with name "<name>" and surname "<surname>"
     Then DB saved the information about request for user id "<id>"
     Examples:
-      | id | name   | surname |
-      | 1  | George | Bluth   |
-      | 2  | Janet  | Weaver  |
-      | 3  | Emma   | Wong    |
-      | 4  | Eve    | Holt    |
-      | 5  | Charles| Morris  |
+      | id | name    | surname |
+      | 1  | George  | Bluth   |
+      | 2  | Janet   | Weaver  |
+      | 3  | Emma    | Wong    |
+      | 4  | Eve     | Holt    |
+      | 5  | Charles | Morris  |
 
 
