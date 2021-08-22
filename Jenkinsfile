@@ -8,6 +8,13 @@ pipeline {
         githubPush()
     }
 
+    environment {
+        LC_ALL = 'en_US.UTF-8'
+        LANG    = 'en_US.UTF-8'
+        LANGUAGE = 'en_US.UTF-8'
+        EMAIL_TO = 'naprokazova@gmail.com'
+    }
+
     parameters {
         string(name: 'GIT_URL', defaultValue: 'https://github.com/nprokazova/lesson18Cucumber.git', description: 'The target git url')
         string(name: 'GIT_BRANCH', defaultValue: 'master', description: 'The target git branch')
@@ -27,7 +34,8 @@ pipeline {
         }
         stage('Run maven clean test') {
             steps {
-                sh 'mvn clean test -Dtest=RunCucumberTest -Dbrowser_name=$BROWSER_NAME -Dbrowser_version=$BROWSER_VERSION'
+		        // sh меняем на bat, если операционная система Windows
+                bat 'mvn clean test -Dtest=RunCucumberTest -Dbrowser_name=$BROWSER_NAME -Dbrowser_version=$BROWSER_VERSION'
             }
         }
         stage('Backup and Reports') {
@@ -37,12 +45,6 @@ pipeline {
             post {
                 always {
                   script {
-                    if (currentBuild.currentResult == 'SUCCESS') {
-                    step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "naprokazova@gmail.com", sendToIndividuals: true])
-                    } else {
-                    step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "naprokazova@gmail.com", sendToIndividuals: true])
-                    }
-
 
                     // Формирование отчета
                     allure([
@@ -55,16 +57,36 @@ pipeline {
                     println('allure report created')
 
                     // Узнаем ветку репозитория
-                    def branch = sh(returnStdout: true, script: 'git rev-parse --abbrev-ref HEAD\n').trim().tokenize().last()
+                    def branch = bat(returnStdout: true, script: 'git rev-parse --abbrev-ref HEAD\n').trim().tokenize().last()
                     println("branch= " + branch)
 
                     // Достаем информацию по тестам из junit репорта
                     def summary = junit testResults: '**/target/surefire-reports/*.xml'
                     println("summary generated")
 
+                    sendNotifications()
+
                     // Текст оповещения
-                    def message = "${currentBuild.currentResult}: Job ${env.JOB_NAME}, build ${env.BUILD_NUMBER}, branch ${branch}\nTest Summary - ${summary.totalCount}, Failures: ${summary.failCount}, Skipped: ${summary.skipCount}, Passed: ${summary.passCount}\nMore info at: ${env.BUILD_URL}"
-                    println("message= " + message)
+                    def sendNotifications() {
+		             def summary = junit testResults: '**/target/surefire-reports/*.xml'
+
+		             def branch = bat(returnStdout: true, script: 'git rev-parse --abbrev-ref HEAD\n').trim().tokenize().last()
+		             def emailMessage = "${currentBuild.currentResult}: Job '${env.JOB_NAME}', Build ${env.BUILD_NUMBER}, Branch ${branch}. \nPassed time: ${currentBuild.durationString}. \n\nTESTS:\nTotal = ${summary.totalCount},
+		             \nFailures = ${summary.failCount},\nSkipped = ${summary.skipCount},\nPassed = ${summary.passCount} \n\nMore info at: ${env.BUILD_URL}"
+
+		             emailext (
+		                 subject: "Jenkins Report",
+		                 body: emailMessage,
+		                 to: "${EMAIL_TO}",
+		                 from: "jenkins@code-maven.com"
+    	             )
+
+		             def colorCode = '#FF0000'
+		             def slackMessage = "${currentBuild.currentResult}: Job '${env.JOB_NAME}', Build ${env.BUILD_NUMBER}. \nTotal = ${summary.totalCount}, Failures = ${summary.failCount}, Skipped = ${summary.skipCount},
+		             Passed = ${summary.passCount} \nMore info at: ${env.BUILD_URL}"
+
+		             slackSend(color: colorCode, message: slackMessage)
+		             }
                   }
                 }
             }
