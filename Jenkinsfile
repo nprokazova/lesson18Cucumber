@@ -40,7 +40,7 @@ pipeline {
                     if (currentBuild.currentResult == 'SUCCESS') {
                     step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "naprokazova@gmail.com", sendToIndividuals: true])
                     } else {
-                    step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "naprokazova@gmail.comvv", sendToIndividuals: true])
+                    step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "naprokazova@gmail.com", sendToIndividuals: true])
                     }
 
 
@@ -59,7 +59,7 @@ pipeline {
                     println("branch= " + branch)
 
                     // Достаем информацию по тестам из junit репорта
-                    def summary = junit testResults: '**/target/surefire-reports/*.xml'
+                    def summary = junit testResults: '**/target/allure-reports/*.xml'
                     println("summary generated")
 
                     // Текст оповещения
