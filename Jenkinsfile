@@ -38,9 +38,9 @@ pipeline {
                 always {
                   script {
                     if (currentBuild.currentResult == 'SUCCESS') {
-                    step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "test@test", sendToIndividuals: true])
+                    step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "natali1083@mail.ru", sendToIndividuals: true])
                     } else {
-                    step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "test@test", sendToIndividuals: true])
+                    step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "natali1083@mail.ru", sendToIndividuals: true])
                     }
 
 
