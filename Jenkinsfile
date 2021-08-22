@@ -34,7 +34,7 @@ pipeline {
         }
         stage('Run maven clean test') {
             steps {
-		        // sh меняем на bat, если операционная система Windows
+                // sh меняем на bat, если операционная система Windows
                 bat 'mvn clean test -Dtest=RunCucumberTest -Dbrowser_name=$BROWSER_NAME -Dbrowser_version=$BROWSER_VERSION'
             }
         }
@@ -54,7 +54,7 @@ pipeline {
                       reportBuildPolicy: 'ALWAYS',
                       results: [[path: 'target/allure-results']]
                     ])
-                    
+
                     println('allure report created')
 
                     // Узнаем ветку репозитория
@@ -75,7 +75,7 @@ pipeline {
 		             def emailMessage = "${currentBuild.currentResult}: Job '${env.JOB_NAME}', Build ${env.BUILD_NUMBER}, Branch ${branch}. \nPassed time: ${currentBuild.durationString}. \n\nTESTS:\nTotal = ${summary.totalCount},
 		             \nFailures = ${summary.failCount},\nSkipped = ${summary.skipCount},\nPassed = ${summary.passCount} \n\nMore info at: ${env.BUILD_URL}"
 
-		             emailext (
+		             emailtext (
 		                 subject: "Jenkins Report",
 		                 body: emailMessage,
 		                 to: "${EMAIL_TO}",
@@ -92,5 +92,3 @@ pipeline {
                 }
             }
         }
-    }
-}
