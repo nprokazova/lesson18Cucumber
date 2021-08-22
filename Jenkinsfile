@@ -9,8 +9,8 @@ pipeline {
     }
 
     parameters {
-        string(name: 'GIT_URL', defaultValue: 'https://github.com/bettri/apiHelperExample-1.git', description: 'The target git url')
-        string(name: 'GIT_BRANCH', defaultValue: 'jenkins', description: 'The target git branch')
+        string(name: 'GIT_URL', defaultValue: 'https://github.com/nprokazova/lesson18Cucumber.git', description: 'The target git url')
+        string(name: 'GIT_BRANCH', defaultValue: 'master', description: 'The target git branch')
         choice(name: 'BROWSER_NAME', choices: ['chrome', 'firefox'], description: 'Pick the target browser in Selenoid')
         choice(name: 'BROWSER_VERSION', choices: ['86.0', '85.0', '78.0'], description: 'Pick the target browser version in Selenoid')
     }
@@ -38,9 +38,9 @@ pipeline {
                 always {
                   script {
                     if (currentBuild.currentResult == 'SUCCESS') {
-                    step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "liliiashaikina3@gmail.com", sendToIndividuals: true])
+                    step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "test@test", sendToIndividuals: true])
                     } else {
-                    step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "liliiashaikina3@gmail.com", sendToIndividuals: true])
+                    step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "test@test", sendToIndividuals: true])
                     }
 
 
