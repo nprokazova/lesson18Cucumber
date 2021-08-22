@@ -5,14 +5,19 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.By;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import io.github.bonigarcia.wdm.WebDriverManager;
 
+import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 public class StepDefinitions {
@@ -133,16 +138,26 @@ public class StepDefinitions {
         System.out.println("A message appeared: You have successfully subscribed");
     }
 
-    @Before
+    @BeforeEach
     public void startUp() {
+        String slenoidURL = "http://0.0.0.0:4444/wd/hub"; //111.11.11.11 -your IP address
+        DesiredCapabilities caps = new DesiredCapabilities();
+        caps.setBrowserName(System.getProperty("browser_name", "chrome"));
+        caps.setVersion(System.getProperty("browser_version", "86.0"));
+        caps.setCapability("enableVNC", true);
+        caps.setCapability("screenResolution", "1280x1024");
+        caps.setCapability("enableVideo", false);
+        caps.setCapability("enableLog", true);
+
         WebDriverManager.chromedriver().setup();
         driver = new ChromeDriver();
         System.out.println("Driver was set up");
 
-        driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+//        driver = new RemoteWebDriver(new URL(slenoidURL), caps);
+        driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
     }
 
-    @After
+    @AfterEach
     public void end() {
 
         if (driver != null)
