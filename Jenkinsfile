@@ -54,6 +54,7 @@ pipeline {
                       reportBuildPolicy: 'ALWAYS',
                       results: [[path: 'target/allure-results']]
                     ])
+                    
                     println('allure report created')
 
                     // Узнаем ветку репозитория
