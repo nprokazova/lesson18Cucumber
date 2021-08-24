@@ -59,7 +59,7 @@ pipeline {
 
 
 
-                    def sendNotifications() {
+                    def sendNotifications()
                     def summary = junit testResults: '**/target/surefire-reports/*.xml'
 
                     def colorCode = '#FF0000'
@@ -71,5 +71,4 @@ pipeline {
             }
         }
     }
-}
 }
