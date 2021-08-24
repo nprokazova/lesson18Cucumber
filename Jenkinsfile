@@ -37,12 +37,7 @@ pipeline {
             post {
                 always {
                   script {
-                    if (currentBuild.currentResult == 'SUCCESS') {
                     step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "naprokazova@gmail.com", sendToIndividuals: true])
-                    } else {
-                    step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "naprokazova@gmail.com", sendToIndividuals: true])
-                    }
-
 
                     // Формирование отчета
                     allure([
@@ -61,15 +56,6 @@ pipeline {
                     // Текст оповещения
                     def message = "${currentBuild.currentResult}: Job ${env.JOB_NAME}, build ${env.BUILD_NUMBER}, branch ${branch}\nTest Summary - ${summary.totalCount}, Failures: ${summary.failCount}, Skipped: ${summary.skipCount}, Passed: ${summary.passCount}\nMore info at: ${env.BUILD_URL}"
                     println("message= " + message)
-
-                    def sendNotifications() {
-                    def summary = junit testResults: '**/target/surefire-reports/*.xml'
-
-                    def colorCode = '#FF0000'
-                    def slackMessage = "${currentBuild.currentResult}: Job ${env.JOB_NAME}, build ${env.BUILD_NUMBER}, branch ${branch}\nTest Summary - ${summary.totalCount}, Failures: ${summary.failCount}, Skipped: ${summary.skipCount},  Passed: ${summary.passCount}\nMore info at: ${env.BUILD_URL}"
-
-                    slackSend(color: colorCode, message: slackMessage)
-                  }
                 }
             }
         }
