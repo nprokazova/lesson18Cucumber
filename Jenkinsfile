@@ -75,8 +75,8 @@ pipeline {
     	            step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "naprokazova@gmail.com", sendToIndividuals: true])
 
 		            def colorCode = '#FF0000'
-		            def slackMessage = "${currentBuild.currentResult}: Job '${env.JOB_NAME}', Build ${env.BUILD_NUMBER}. \nTotal = ${summary.totalCount}, Failures = ${summary.failCount}, Skipped = ${summary.skipCount},
-		            Passed = ${summary.passCount} \nMore info at: ${env.BUILD_URL}"
+		            def slackMessage = "${currentBuild.currentResult}: Job '${env.JOB_NAME}', Build ${env.BUILD_NUMBER}. "" \nTotal = ${summary.totalCount}, Failures = ${summary.failCount}, Skipped = ${summary.skipCount},
+		            Passed = ${summary.passCount} "" \nMore info at: ${env.BUILD_URL}"
 
 		            slackSend(color: colorCode, message: slackMessage)
 		            }
