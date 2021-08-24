@@ -140,20 +140,20 @@ public class StepDefinitions {
 
     @BeforeEach
     public void startUp() {
-        String slenoidURL = "http://0.0.0.0:4444/wd/hub"; //111.11.11.11 -your IP address
-        DesiredCapabilities caps = new DesiredCapabilities();
-        caps.setBrowserName(System.getProperty("browser_name", "chrome"));
-        caps.setVersion(System.getProperty("browser_version", "86.0"));
-        caps.setCapability("enableVNC", true);
-        caps.setCapability("screenResolution", "1280x1024");
-        caps.setCapability("enableVideo", false);
-        caps.setCapability("enableLog", true);
+       String slenoidURL = "http://188.123.231.27:4444/wd/hub"; //111.11.11.11 -your IP address
+       DesiredCapabilities caps = new DesiredCapabilities();
+       caps.setBrowserName(System.getProperty("browser_name", "chrome"));
+       caps.setVersion(System.getProperty("browser_version", "86.0"));
+       caps.setCapability("enableVNC", true);
+       caps.setCapability("screenResolution", "1280x1024");
+       caps.setCapability("enableVideo", false);
+       caps.setCapability("enableLog", true);
 
         WebDriverManager.chromedriver().setup();
         driver = new ChromeDriver();
         System.out.println("Driver was set up");
 
-//        driver = new RemoteWebDriver(new URL(slenoidURL), caps);
+        driver = new RemoteWebDriver(new URL(slenoidURL), caps);
         driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
     }
 
