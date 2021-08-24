@@ -17,7 +17,7 @@ pipeline {
 
     parameters {
         string(name: 'GIT_URL', defaultValue: 'https://github.com/nprokazova/lesson18Cucumber.git', description: 'The target git url')
-        string(name: 'GIT_BRANCH', defaultValue: 'homework', description: 'The target git branch')
+        string(name: 'GIT_BRANCH', defaultValue: 'master', description: 'The target git branch')
         choice(name: 'BROWSER_NAME', choices: ['chrome', 'firefox'], description: 'Pick the target browser in Selenoid')
         choice(name: 'BROWSER_VERSION', choices: ['86.0', '85.0', '78.0'], description: 'Pick the target browser version in Selenoid')
     }
@@ -63,12 +63,6 @@ pipeline {
                     // Достаем информацию по тестам из junit репорта
                     def summary = junit testResults: '**/target/surefire-reports/*.xml'
                     println("summary generated")
-
-                    // Текст оповещения
-                    def message = "${currentBuild.currentResult}: Job ${env.JOB_NAME}, build ${env.BUILD_NUMBER}, branch ${branch}\nTest Summary - ${summary.totalCount}, Failures: ${summary.failCount},
-                    Skipped: ${summary.skipCount}, Passed: ${summary.passCount}\nMore info at: ${env.BUILD_URL}"
-                    println("message= " + message)
-
 
                     // Текст оповещения
                     def sendNotifications() {
