@@ -8,15 +8,8 @@ pipeline {
         githubPush()
     }
 
-    environment {
-        LC_ALL = 'en_US.UTF-8'
-        LANG    = 'en_US.UTF-8'
-        LANGUAGE = 'en_US.UTF-8'
-        EMAIL_TO = 'naprokazova@gmail.com'
-    }
-
     parameters {
-        string(name: 'GIT_URL', defaultValue: 'https://github.com/nprokazova/lesson18Cucumber.git', description: 'The target git url')
+        string(name: 'GIT_URL', defaultValue: 'https://github.com/nprokazova/lesson18Cucumber', description: 'The target git url')
         string(name: 'GIT_BRANCH', defaultValue: 'master', description: 'The target git branch')
         choice(name: 'BROWSER_NAME', choices: ['chrome', 'firefox'], description: 'Pick the target browser in Selenoid')
         choice(name: 'BROWSER_VERSION', choices: ['86.0', '85.0', '78.0'], description: 'Pick the target browser version in Selenoid')
@@ -34,7 +27,6 @@ pipeline {
         }
         stage('Run maven clean test') {
             steps {
-                // sh меняем на bat, если операционная система Windows
                 bat 'mvn clean test -Dtest=RunCucumberTest -Dbrowser_name=$BROWSER_NAME -Dbrowser_version=$BROWSER_VERSION'
             }
         }
@@ -45,42 +37,42 @@ pipeline {
             post {
                 always {
                   script {
-                     // Формирование отчета
-                     allure([
+                    if (currentBuild.currentResult == 'SUCCESS') {
+                    step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "naprokazova@gmail.com", sendToIndividuals: true])
+                    } else {
+                    step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "naprokazova@gmail.com", sendToIndividuals: true])
+                    }
+
+
+                    // Формирование отчета
+                    allure([
                       includeProperties: false,
                       jdk: '',
                       properties: [],
                       reportBuildPolicy: 'ALWAYS',
                       results: [[path: 'target/allure-results']]
-                      ])
-
+                    ])
                     println('allure report created')
 
                     // Узнаем ветку репозитория
-                    def branch = sh(returnStdout: true, script: 'git rev-parse --abbrev-ref HEAD\n').trim().tokenize().last()
+                    def branch = bat (returnStdout: true, script: 'git rev-parse --abbrev-ref HEAD\n').trim().tokenize().last()
                     println("branch= " + branch)
 
-                    // Достаем информацию по тестам из junit репорта
-                    def summary = junit testResults: '**/target/surefire-reports/*.xml'
-                    println("summary generated")
-
                     // Текст оповещения
+                    def message = "${currentBuild.currentResult}: Job ${env.JOB_NAME}, build ${env.BUILD_NUMBER}, branch ${branch}\nTest Summary - ${summary.totalCount}, Failures: ${summary.failCount}, Skipped: ${summary.skipCount}, Passed: ${summary.passCount}\nMore info at: ${env.BUILD_URL}"
+                    println("message= " + message)
+
                     def sendNotifications() {
-		            def summary = junit testResults: '**/target/surefire-reports/*.xml'
+                    def summary = junit testResults: '**/target/surefire-reports/*.xml'
 
-		            def branch = bat(returnStdout: true, script: 'git rev-parse --abbrev-ref HEAD\n').trim().tokenize().last()
-		            def emailMessage = "${currentBuild.currentResult}: Job '${env.JOB_NAME}', Build ${env.BUILD_NUMBER}, Branch ${branch}. "" \nPassed time: ${currentBuild.durationString}. "" \nTest Summary - ${summary.totalCount}, ""
-		            \nFailures = ${summary.failCount}, "" "\nSkipped = ${summary.skipCount}, Passed = ${summary.passCount} "" \n\nMore info at: ${env.BUILD_URL}"
+                    def colorCode = '#FF0000'
+                    def slackMessage = "${currentBuild.currentResult}: Job '${env.JOB_NAME}', Build ${env.BUILD_NUMBER}. "" \nTotal = ${summary.totalCount}, Failures = ${summary.failCount}, Skipped = ${summary.skipCount},
+                    Passed = ${summary.passCount} "" \nMore info at: ${env.BUILD_URL}"
 
-    	            step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "naprokazova@gmail.com", sendToIndividuals: true])
-
-		            def colorCode = '#FF0000'
-		            def slackMessage = "${currentBuild.currentResult}: Job '${env.JOB_NAME}', Build ${env.BUILD_NUMBER}. "" \nTotal = ${summary.totalCount}, Failures = ${summary.failCount}, Skipped = ${summary.skipCount},
-		            Passed = ${summary.passCount} "" \nMore info at: ${env.BUILD_URL}"
-
-		            slackSend(color: colorCode, message: slackMessage)
-		            }
+                    slackSend(color: colorCode, message: slackMessage)
                   }
                 }
             }
         }
+    }
+}
